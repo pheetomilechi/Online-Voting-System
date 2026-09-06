@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+.env.local
+
+server/uploads/
+client/public/models/
+
+npm-debug.log*
+.DS_Store

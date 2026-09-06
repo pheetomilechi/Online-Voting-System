@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Camera, CameraOff, UserPlus, Check } from 'lucide-react'
 import * as faceapi from 'face-api.js'
+import { loadFaceModels } from '../lib/faceModels'
 
 const Register = ({ onLogin }) => {
   const [formData, setFormData] = useState({
@@ -29,18 +30,12 @@ const Register = ({ onLogin }) => {
   const loadModels = async () => {
     try {
       setIsLoading(true)
-      const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models'
-      await Promise.all([
-        faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-        faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-        faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
-        faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
-      ])
+      await loadFaceModels()
       setIsModelLoaded(true)
       setIsLoading(false)
     } catch (err) {
       console.error('Error loading models:', err)
-      setError('Failed to load face recognition models')
+      setError(`Failed to load face recognition models: ${err.message}`)
       setIsLoading(false)
     }
   }

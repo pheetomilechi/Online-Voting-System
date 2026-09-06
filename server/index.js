@@ -7,7 +7,7 @@ const fs = require('fs');
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
@@ -32,6 +32,19 @@ app.use('/api/admin', require('./routes/admin'));
 
 // Serve static files from uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+app.use('/api', (req, res) => {
+  res.status(404).json({ message: `Unknown API endpoint: ${req.method} ${req.originalUrl}` });
+});
+
+// Serve the built client and let React Router handle client-side routes
+const clientDist = path.join(__dirname, '../client/dist');
+if (fs.existsSync(clientDist)) {
+  app.use(express.static(clientDist));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(clientDist, 'index.html'));
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

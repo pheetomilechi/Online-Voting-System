@@ -70,8 +70,8 @@ windsurf-project-2/
 ## Installation
 
 ### Prerequisites
-- Node.js (v16 or higher)
-- npm or yarn
+- Node.js 20.19+ or 22.12+ (required by Vite 7)
+- npm
 
 ### Setup Instructions
 
@@ -87,18 +87,27 @@ windsurf-project-2/
    cd ..
    ```
 
-3. **Or install all at once:**
+3. **Download the face recognition models:**
+   ```bash
+   npm run fetch-models
+   ```
+   This populates `client/public/models/`, which the app loads from `/models`. The files are
+   gitignored; without them the app falls back to the public face-api.js CDN.
+
+4. **Or do all of the above at once:**
    ```bash
    npm run install-all
    ```
 
-4. **Configure environment variables:**
-   The `.env` file is already configured with default values. For production, update the JWT_SECRET:
+5. **Configure environment variables:**
+   Copy `.env.example` to `.env` and set a real secret:
    ```
    PORT=5000
    JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
    NODE_ENV=development
    ```
+   `PORT` must not be 3000 — the Vite dev server listens on 3000 and proxies `/api` and
+   `/uploads` to the backend on 5000.
 
 ## Running the Application
 
