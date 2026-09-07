@@ -78,7 +78,7 @@ router.post('/register', upload.single('faceImage'), (req, res) => {
     });
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ message: 'Server error during registration' });
+    res.status(500).json({ message: `Server error during registration: ${error.message}` });
   }
 });
 
@@ -92,7 +92,7 @@ router.post('/login', (req, res) => {
     }
 
     const users = getUsers();
-    const descriptor = JSON.parse(faceDescriptor);
+    const descriptor = typeof faceDescriptor === 'string' ? JSON.parse(faceDescriptor) : faceDescriptor;
 
     // Simple matching - in production, use proper face-api.js matching
     let matchedUser = null;
@@ -126,7 +126,7 @@ router.post('/login', (req, res) => {
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ message: 'Server error during login' });
+    res.status(500).json({ message: `Server error during login: ${error.message}` });
   }
 });
 

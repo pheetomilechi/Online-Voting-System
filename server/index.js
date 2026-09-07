@@ -6,6 +6,11 @@ const fs = require('fs');
 
 dotenv.config();
 
+if (!process.env.JWT_SECRET) {
+  console.error('JWT_SECRET is not set. Copy .env.example to .env and set a long random value.');
+  process.exit(1);
+}
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
