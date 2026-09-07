@@ -6,6 +6,8 @@ const fs = require('fs');
 
 dotenv.config();
 
+const { seedAdmin } = require('./lib/admins');
+
 if (!process.env.JWT_SECRET) {
   console.error('JWT_SECRET is not set. Copy .env.example to .env and set a long random value.');
   process.exit(1);
@@ -28,6 +30,10 @@ if (!fs.existsSync(uploadsDir)) {
 }
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
+}
+
+if (!seedAdmin()) {
+  console.warn('ADMIN_EMAIL/ADMIN_PASSWORD not set — no administrator account is available.');
 }
 
 // Routes

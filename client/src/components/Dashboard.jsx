@@ -59,12 +59,6 @@ const Dashboard = ({ user, onLogout }) => {
             </div>
             <div className="flex gap-4">
               <button
-                onClick={() => navigate('/admin')}
-                className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold"
-              >
-                Admin Panel
-              </button>
-              <button
                 onClick={onLogout}
                 className="flex items-center gap-2 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
               >

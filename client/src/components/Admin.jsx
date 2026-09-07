@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Plus, Trash2, Power, CheckCircle, XCircle } from 'lucide-react'
+import { LogOut, Plus, Trash2, Power, CheckCircle, Users, BarChart3 } from 'lucide-react'
 
-const Admin = ({ user }) => {
-  const navigate = useNavigate()
+const Admin = ({ user, onLogout }) => {
   const [elections, setElections] = useState([])
+  const [analytics, setAnalytics] = useState(null)
   const [loading, setLoading] = useState(true)
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [newElection, setNewElection] = useState({
@@ -15,7 +14,25 @@ const Admin = ({ user }) => {
 
   useEffect(() => {
     fetchElections()
+    fetchAnalytics()
   }, [])
+
+  const fetchAnalytics = async () => {
+    try {
+      const token = localStorage.getItem('token')
+      const response = await fetch('/api/admin/analytics', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      const data = await response.json()
+      if (response.ok) {
+        setAnalytics(data)
+      }
+    } catch (error) {
+      console.error('Error fetching analytics:', error)
+    }
+  }
 
   const fetchElections = async () => {
     try {
@@ -68,6 +85,7 @@ const Admin = ({ user }) => {
           candidates: [{ name: '', description: '' }]
         })
         fetchElections()
+        fetchAnalytics()
       } else {
         alert('Failed to create election')
       }
@@ -93,6 +111,7 @@ const Admin = ({ user }) => {
 
       if (response.ok) {
         fetchElections()
+        fetchAnalytics()
       } else {
         alert('Failed to delete election')
       }
@@ -116,6 +135,7 @@ const Admin = ({ user }) => {
 
       if (response.ok) {
         fetchElections()
+        fetchAnalytics()
       } else {
         alert('Failed to update election status')
       }
@@ -147,22 +167,93 @@ const Admin = ({ user }) => {
     <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Back to Dashboard
-          </button>
-          <button
-            onClick={() => setShowCreateForm(!showCreateForm)}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all font-semibold"
-          >
-            <Plus className="w-5 h-5" />
-            Create Election
-          </button>
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
+            <p className="text-gray-600">Signed in as {user.email}</p>
+          </div>
+          <div className="flex gap-4">
+            <button
+              onClick={() => setShowCreateForm(!showCreateForm)}
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all font-semibold"
+            >
+              <Plus className="w-5 h-5" />
+              Create Election
+            </button>
+            <button
+              onClick={onLogout}
+              className="flex items-center gap-2 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
+            >
+              <LogOut className="w-5 h-5" />
+              Logout
+            </button>
+          </div>
         </div>
+
+        {/* Analytics */}
+        {analytics && (
+          <div className="mb-8">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+              <div className="bg-white rounded-2xl shadow-lg p-6">
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Users className="w-5 h-5" />
+                  Registered Voters
+                </div>
+                <p className="text-3xl font-bold text-gray-800 mt-2">{analytics.totals.registeredVoters}</p>
+              </div>
+              <div className="bg-white rounded-2xl shadow-lg p-6">
+                <div className="flex items-center gap-2 text-gray-600">
+                  <BarChart3 className="w-5 h-5" />
+                  Votes Cast
+                </div>
+                <p className="text-3xl font-bold text-gray-800 mt-2">{analytics.totals.votesCast}</p>
+              </div>
+              <div className="bg-white rounded-2xl shadow-lg p-6">
+                <div className="text-gray-600">Elections</div>
+                <p className="text-3xl font-bold text-gray-800 mt-2">{analytics.totals.elections}</p>
+              </div>
+              <div className="bg-white rounded-2xl shadow-lg p-6">
+                <div className="text-gray-600">Active Now</div>
+                <p className="text-3xl font-bold text-gray-800 mt-2">{analytics.totals.activeElections}</p>
+              </div>
+            </div>
+
+            {analytics.elections.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-lg p-6">
+                <h2 className="text-xl font-bold text-gray-800 mb-4">Vote Analytics</h2>
+                <div className="space-y-6">
+                  {analytics.elections.map((election) => (
+                    <div key={election.id}>
+                      <div className="flex justify-between items-baseline mb-2">
+                        <h3 className="font-semibold text-gray-800">{election.title}</h3>
+                        <span className="text-sm text-gray-600">
+                          {election.totalVotes} votes · {Math.round(election.turnout * 100)}% turnout
+                          {election.leader && ` · leading: ${election.leader.name}`}
+                        </span>
+                      </div>
+                      <div className="space-y-2">
+                        {election.candidates.map((candidate) => (
+                          <div key={candidate.id} className="flex items-center gap-3">
+                            <span className="w-40 truncate text-sm text-gray-700">{candidate.name}</span>
+                            <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-gradient-to-r from-purple-600 to-indigo-600"
+                                style={{
+                                  width: `${election.totalVotes > 0 ? (candidate.voteCount / election.totalVotes) * 100 : 0}%`
+                                }}
+                              />
+                            </div>
+                            <span className="w-16 text-right text-sm text-gray-600">{candidate.voteCount}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Create Election Form */}
         {showCreateForm && (

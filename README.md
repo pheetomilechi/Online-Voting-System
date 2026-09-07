@@ -105,7 +105,14 @@ windsurf-project-2/
    PORT=5000
    JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
    NODE_ENV=development
+   ADMIN_EMAIL=admin@example.com
+   ADMIN_PASSWORD=pick-a-strong-password
+   ADMIN_NAME=Administrator
    ```
+   `ADMIN_EMAIL`/`ADMIN_PASSWORD` define the administrator account, which is created on
+   server start (and its password re-synced whenever you change these values). Without
+   them no administrator can sign in.
+
    `PORT` must not be 3000 — the Vite dev server listens on 3000 and proxies `/api` and
    `/uploads` to the backend on 5000.
 
@@ -154,11 +161,14 @@ npm run build
 - Submit your vote (one vote per election)
 
 ### 4. Admin Panel
-- Access the admin panel from the dashboard
+Administrators are separate from voters: they sign in with email and password at
+`/admin/login` (linked from the voter login page) and never use face recognition.
+Voters cannot reach the admin panel or the `/api/admin/*` endpoints.
+
 - Create new elections with multiple candidates
 - Activate or end elections
 - Delete elections
-- View vote counts
+- Monitor analytics: registered voters, votes cast, turnout and per-candidate breakdowns
 
 ## API Endpoints
 
@@ -174,6 +184,9 @@ npm run build
 - `GET /api/voting/results/:id` - Get election results
 
 ### Admin
+All endpoints below except login require an administrator token.
+- `POST /api/admin/login` - Administrator login with email and password
+- `GET /api/admin/analytics` - Vote analytics across all elections
 - `POST /api/admin/elections` - Create new election
 - `GET /api/admin/elections` - Get all elections
 - `PUT /api/admin/elections/:id/status` - Update election status

@@ -198,6 +198,14 @@ const Login = ({ onLogin }) => {
               Register
             </button>
           </p>
+          <p className="text-gray-600 mt-2">
+            <button
+              onClick={() => navigate('/admin/login')}
+              className="text-purple-600 hover:text-purple-700 font-semibold"
+            >
+              Administrator login
+            </button>
+          </p>
         </div>
       </div>
     </div>
