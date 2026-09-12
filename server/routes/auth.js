@@ -64,7 +64,7 @@ router.post('/register', upload.single('faceImage'), (req, res) => {
     users.push(newUser);
     saveUsers(users);
 
-    const token = jwt.sign({ id: newUser.id, email: newUser.email }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    const token = jwt.sign({ id: newUser.id, email: newUser.email, role: 'voter' }, process.env.JWT_SECRET, { expiresIn: '24h' });
 
     res.status(201).json({
       message: 'User registered successfully',
@@ -73,12 +73,13 @@ router.post('/register', upload.single('faceImage'), (req, res) => {
         id: newUser.id,
         name: newUser.name,
         email: newUser.email,
-        voterId: newUser.voterId
+        voterId: newUser.voterId,
+        role: 'voter'
       }
     });
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ message: 'Server error during registration' });
+    res.status(500).json({ message: `Server error during registration: ${error.message}` });
   }
 });
 
@@ -92,7 +93,7 @@ router.post('/login', (req, res) => {
     }
 
     const users = getUsers();
-    const descriptor = JSON.parse(faceDescriptor);
+    const descriptor = typeof faceDescriptor === 'string' ? JSON.parse(faceDescriptor) : faceDescriptor;
 
     // Simple matching - in production, use proper face-api.js matching
     let matchedUser = null;
@@ -112,7 +113,7 @@ router.post('/login', (req, res) => {
       return res.status(401).json({ message: 'Face not recognized' });
     }
 
-    const token = jwt.sign({ id: matchedUser.id, email: matchedUser.email }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    const token = jwt.sign({ id: matchedUser.id, email: matchedUser.email, role: 'voter' }, process.env.JWT_SECRET, { expiresIn: '24h' });
 
     res.json({
       message: 'Login successful',
@@ -121,12 +122,13 @@ router.post('/login', (req, res) => {
         id: matchedUser.id,
         name: matchedUser.name,
         email: matchedUser.email,
-        voterId: matchedUser.voterId
+        voterId: matchedUser.voterId,
+        role: 'voter'
       }
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ message: 'Server error during login' });
+    res.status(500).json({ message: `Server error during login: ${error.message}` });
   }
 });
 
@@ -161,7 +163,8 @@ router.get('/me', (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        voterId: user.voterId
+        voterId: user.voterId,
+        role: 'voter'
       }
     });
   } catch (error) {

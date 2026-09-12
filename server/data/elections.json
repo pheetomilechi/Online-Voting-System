@@ -1,1 +1,43 @@
-[]
+[
+  {
+    "id": "5cb5530f-9fa3-493c-b00d-5a9af869ba9f",
+    "title": "Governorship Election",
+    "description": "Gubernatorial Election ",
+    "candidates": [
+      {
+        "id": "760cb06b-1ffb-446b-a9f7-efad0081853d",
+        "name": "Funmi Adeleke",
+        "description": "Son of the Soil",
+        "voteCount": 0
+      },
+      {
+        "id": "73910b20-9946-468c-aaf8-1d6ccc74aa29",
+        "name": "Makinde Adefaransi",
+        "description": "Omo Alade",
+        "voteCount": 0
+      },
+      {
+        "id": "e4775217-f012-40bd-970d-f19ca1837941",
+        "name": "Bosun Babagide",
+        "description": "King of the Boys",
+        "voteCount": 1
+      },
+      {
+        "id": "27d1084d-43f6-498c-9314-46f2c40058ca",
+        "name": "Emmanuella Remi",
+        "description": "Remi Fundzs",
+        "voteCount": 0
+      },
+      {
+        "id": "7c7bf0ff-69e1-444b-874c-4919414b165d",
+        "name": "Adeleke David",
+        "description": "Davido",
+        "voteCount": 0
+      }
+    ],
+    "startDate": "2026-09-07T11:30:38.313Z",
+    "endDate": null,
+    "status": "active",
+    "createdBy": "3919115a-8573-4c49-9669-f4c740a27ab6"
+  }
+]

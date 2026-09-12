@@ -5,6 +5,7 @@ const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 
 const auth = require('../middleware/auth');
+const requireVoter = require('../middleware/requireVoter');
 
 const getElections = () => {
   const dataPath = path.join(__dirname, '../data/elections.json');
@@ -68,7 +69,7 @@ router.get('/elections/:id', auth, (req, res) => {
 });
 
 // Submit a vote
-router.post('/vote', auth, (req, res) => {
+router.post('/vote', requireVoter, (req, res) => {
   try {
     const { electionId, candidateId } = req.body;
 
